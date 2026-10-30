@@ -1,202 +1,125 @@
-import { useEffect, useState } from 'react';
-import { ArrowDownRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'motion/react';
+import { ArrowDownRight, ArrowRight } from 'lucide-react';
+import LiveField from '@/art/LiveField';
+import RotatingText from '@/components/reactbits/RotatingText';
+import CircularText from '@/components/reactbits/CircularText';
+import StarBorder from '@/components/reactbits/StarBorder';
+import CountUp from '@/components/reactbits/CountUp';
+import { scrollTo } from '@/lib/scroll';
+import { usePalette } from '@/state/palette';
 
-interface ProfileCard {
-  id: number;
-  name: string;
-  role: string;
-  location: string;
-  image: string;
+const ease = [0.16, 1, 0.3, 1] as const;
+
+function Line({ children, delay }: { children: React.ReactNode; delay: number }) {
+  return (
+    <span className="block overflow-hidden pb-[0.08em]">
+      <motion.span className="block" initial={{ y: '110%' }} animate={{ y: 0 }} transition={{ duration: 1.1, delay, ease }}>
+        {children}
+      </motion.span>
+    </span>
+  );
 }
 
-const profileCards: ProfileCard[] = [
-  {
-    id: 1,
-    name: 'Alberto Balocca',
-    role: 'Artist',
-    location: 'Italy',
-    image: '/images/profile1.jpg',
-  },
-  {
-    id: 2,
-    name: 'Thomas Oosterhof',
-    role: 'Curator',
-    location: 'Netherlands',
-    image: '/images/profile2.jpg',
-  },
-  {
-    id: 3,
-    name: 'Isabela Galeano',
-    role: 'Curator',
-    location: 'USA',
-    image: '/images/profile3.jpg',
-  },
-];
-
-export default function Hero() {
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % profileCards.length);
-    }, 5000); // Slower interval for better readability
-    return () => clearInterval(interval);
-  }, []);
-
-  const getCardStyle = (index: number) => {
-    const total = profileCards.length;
-    let diff = (index - activeIndex) % total;
-    if (diff < 0) diff += total;
-    if (diff > total / 2) diff -= total;
-
-    return {
-      x: diff * 220, // Increased spacing
-      y: Math.abs(diff) * 40,
-      z: -Math.abs(diff) * 150,
-      rotateY: diff * -20,
-      rotateX: 5,
-      scale: 1 - Math.abs(diff) * 0.15,
-      zIndex: 10 - Math.abs(diff),
-      opacity: 1 - Math.abs(diff) * 0.4,
-    };
-  };
-
+export default function Hero({ ready }: { ready: boolean }) {
+  const { colors, name } = usePalette();
+  const d = 0;
   return (
-    <div className="relative min-h-screen bg-taupe overflow-hidden noise-overlay perspective-1000 flex flex-col justify-between">
-      {/* Massive Background Text - Refined Typography */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none">
-        <motion.h1
-          initial={{ opacity: 0, y: 100, scale: 0.9 }}
-          animate={{ opacity: 0.15, y: 0, scale: 1 }}
-          transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
-          className="hero-text-massive text-outline font-black tracking-tighter"
-        >
-          FLOW.ART
-        </motion.h1>
-      </div>
+    <section id="top" className="relative flex min-h-[100svh] flex-col overflow-hidden bg-ink">
+      <LiveField className="absolute inset-0 h-full w-full" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_60%,transparent_20%,var(--color-ink)_85%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink to-transparent" />
 
-      {/* 3D Rotating Cards - Centered */}
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center justify-center perspective-[1200px] z-10">
-        <div className="relative w-full max-w-5xl h-[600px] flex items-center justify-center preserve-3d">
-          <AnimatePresence>
-            {profileCards.map((card, index) => {
-              const style = getCardStyle(index);
+      {ready && (
+        <div className="relative z-10 flex flex-1 flex-col justify-end px-5 pb-8 pt-28 md:px-10 md:pb-10">
+          <motion.p className="kicker mb-6 flex items-center gap-3 text-bone/70" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: d + 0.2 }}>
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-vermilion opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-vermilion" />
+            </span>
+            Season 04 · Weather Systems · Now open
+          </motion.p>
 
-              return (
-                <motion.div
-                  key={card.id}
-                  className="absolute cursor-pointer"
-                  initial={false}
-                  animate={{
-                    x: style.x,
-                    y: style.y,
-                    z: style.z,
-                    rotateY: style.rotateY,
-                    rotateX: style.rotateX,
-                    scale: style.scale,
-                    zIndex: style.zIndex,
-                    opacity: style.opacity,
-                  }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 120,
-                    damping: 25,
-                    mass: 1.1
-                  }}
-                  onClick={() => setActiveIndex(index)}
-                  whileHover={{ scale: style.scale * 1.05 }}
-                >
-                  <div className="card-3d group">
-                    <div className="bg-charcoal rounded-[2rem] overflow-hidden shadow-2xl w-[280px] h-[400px] border border-white/10 transition-colors duration-500 group-hover:border-white/20">
-                      {/* Card Content */}
-                      <div className="relative h-full flex flex-col">
-                        <div className="p-8 z-10">
-                          <motion.h3
-                            className="text-white text-3xl font-serif font-medium leading-none mb-2 tracking-tight"
-                            layoutId={`title-${card.id}`}
-                          >
-                            {card.name.split(' ')[0]} <br />
-                            <span className="text-white/60 font-sans text-xl font-normal">{card.name.split(' ')[1]}</span>
-                          </motion.h3>
-                          <div className="flex flex-col gap-1 mt-4">
-                            <p className="text-sage text-sm uppercase tracking-widest font-medium">{card.role}</p>
-                            <p className="text-white/40 text-xs">{card.location}</p>
-                          </div>
-                        </div>
+          <h1 className="display text-[15vw] leading-[0.86] md:text-[9.5vw]">
+            <Line delay={d + 0.05}>Every artist</Line>
+            <Line delay={d + 0.15}>
+              deserves <em className="text-bone/60">a</em>
+            </Line>
+            <span className="block overflow-hidden pb-[0.12em]">
+              <motion.span className="flex" initial={{ y: '110%' }} animate={{ y: 0 }} transition={{ duration: 1.1, delay: d + 0.25, ease }}>
+                <RotatingText
+                  texts={['full room.', 'white wall.', 'first night.', 'second look.', 'full house.']}
+                  mainClassName="italic text-saffron"
+                  splitLevelClassName="overflow-hidden pb-[0.1em]"
+                  effect="slide"
+                  staggerDuration={0.025}
+                  staggerFrom="last"
+                  rotationInterval={2600}
+                />
+              </motion.span>
+            </span>
+          </h1>
 
-                        {/* Card Image */}
-                        <div className="absolute bottom-0 w-full h-[60%] overflow-hidden">
-                          <div className="w-full h-full bg-gray-800 relative">
-                            <img
-                              src={card.image}
-                              alt={card.name}
-                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out scale-105 group-hover:scale-100"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-transparent to-transparent opacity-60" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </div>
-      </div>
+          <div className="mt-10 grid items-end gap-8 md:grid-cols-[1fr_auto_auto]">
+            <motion.p className="max-w-md text-lg text-bone/75" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: d + 0.6, duration: 0.8 }}>
+              Vernissage is the network where artists and curators find each other, hang their work in shared rooms,
+              and throw an opening night for anyone, anywhere.
+            </motion.p>
 
-      {/* Bottom Content - Editorial Layout */}
-      <div className="absolute bottom-12 left-0 right-0 px-8 md:px-16 flex justify-between items-end z-20">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col gap-6"
-        >
-          <div className="flex items-start gap-4 max-w-xs group cursor-pointer">
-            <div className="p-3 bg-white/5 rounded-full backdrop-blur-sm border border-white/10 group-hover:bg-white/10 transition-colors">
-              <ArrowDownRight className="w-6 h-6 text-white group-hover:rotate-45 transition-transform duration-500 ease-in-out" />
-            </div>
-            <div>
-              <p className="text-white text-lg font-light leading-snug">
-                <span className="font-medium">Discover</span> the nexus where <br />
-                curators and artists <span className="italic text-sage-light">collide</span>.
-              </p>
-            </div>
+            <motion.div className="flex flex-wrap items-center gap-3" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: d + 0.75, duration: 0.8 }}>
+              <StarBorder
+                as="a"
+                href="#pass"
+                onClick={(e: React.MouseEvent) => {
+                  e.preventDefault();
+                  scrollTo('#pass');
+                }}
+                color={colors[3]}
+                backgroundColor="#00121C"
+                textColor="#EAE2B7"
+                radius={999}
+                className="!px-6 !py-3.5 text-sm font-medium"
+              >
+                <span className="flex items-center gap-2">
+                  Get your Pass <ArrowRight size={15} />
+                </span>
+              </StarBorder>
+              <button onClick={() => scrollTo('#season')} className="btn-fill text-sm" data-cursor="">
+                Browse the season <ArrowDownRight size={15} />
+              </button>
+            </motion.div>
+
+            <motion.div className="hidden md:block" initial={{ opacity: 0, scale: 0.6, rotate: -40 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ delay: d + 0.9, duration: 1.2, ease }}>
+              <button onClick={() => scrollTo('#manifesto')} aria-label="Scroll down" data-cursor="Enter">
+                <CircularText text="DOORS OPEN ✺ SEASON 04 ✺ VERNISSAGE ✺ " size={132} fontSize={12} onHover="speedUp" spinDuration={18} color="#EAE2B7">
+                  <span className="display text-4xl text-saffron">↓</span>
+                </CircularText>
+              </button>
+            </motion.div>
           </div>
-        </motion.div>
 
-        {/* Custom Pagination */}
-        <div className="hidden md:flex gap-4 mb-4">
-          {profileCards.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setActiveIndex(index)}
-              className="group relative h-12 w-4 flex items-center justify-center"
-            >
-              <div className={`w-1 h-1 rounded-full bg-white transition-all duration-500 ${index === activeIndex ? 'h-8 opacity-100' : 'h-1 opacity-40 group-hover:opacity-80 group-hover:h-2'}`} />
-            </button>
-          ))}
+          <motion.div
+            className="mt-10 grid grid-cols-2 gap-y-4 border-t border-bone/15 pt-5 text-sm md:grid-cols-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: d + 1, duration: 1 }}
+          >
+            {[
+              { n: 48210, l: 'artists hanging work' },
+              { n: 6904, l: 'curators looking' },
+              { n: 312, l: 'openings this week' },
+            ].map((s) => (
+              <div key={s.l}>
+                <CountUp to={s.n} separator="," duration={2.2} className="display text-3xl tabular-nums" trigger="load" />
+                <p className="kicker mt-1 text-mute">{s.l}</p>
+              </div>
+            ))}
+            <div className="text-right md:text-left">
+              <p className="font-serif text-lg italic text-bone/80">“Hero Field”, 2026</p>
+              <p className="kicker mt-1 text-mute">Live generative · {name} · move your cursor</p>
+            </div>
+          </motion.div>
         </div>
-      </div>
-
-      {/* Decorative Elements */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.4 }}
-        transition={{ delay: 1, duration: 2 }}
-        className="absolute bottom-32 right-32 hidden lg:block"
-      >
-        <svg width="120" height="120" viewBox="0 0 100 100" className="animate-spin-slow">
-          <path id="curve" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="transparent" />
-          <text className="text-[10px] uppercase tracking-[0.2em] fill-white font-medium">
-            <textPath href="#curve">
-              Curated • Digital • Art • Experience •
-            </textPath>
-          </text>
-        </svg>
-      </motion.div>
-    </div>
+      )}
+    </section>
   );
 }

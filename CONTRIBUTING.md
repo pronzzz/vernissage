@@ -1,12 +1,12 @@
-# Contributing to FlowArt
+# Contributing to Vernissage
 
-First off, thanks for taking the time to contribute! FlowArt is a community-driven project, and we value your input.
+First off, thanks for taking the time to contribute! Vernissage is a design demo, and ideas for new sections, art styles or palettes are very welcome.
 
 ## How Can I Contribute?
 
 ### Reporting Bugs
 
-This section guides you through submitting a bug report for FlowArt. Following these guidelines helps maintainers and the community understand your report, reproduce the behavior, and find related reports.
+This section guides you through submitting a bug report for Vernissage. Following these guidelines helps maintainers and the community understand your report, reproduce the behavior, and find related reports.
 
 - **Use the GitHub Issues search** — check if the issue has already been reported.
 - **Check if the issue has been fixed** — try to reproduce it using the latest `main` branch in the repository.
@@ -14,7 +14,7 @@ This section guides you through submitting a bug report for FlowArt. Following t
 
 ### Suggesting Enhancements
 
-This section guides you through submitting an enhancement suggestion for FlowArt, including completely new features and minor improvements to existing functionality.
+This section guides you through submitting an enhancement suggestion for Vernissage, including completely new features and minor improvements to existing functionality.
 
 - **Use a clear and descriptive title** for the issue to identify the suggestion.
 - **Provide a step-by-step description of the suggested enhancement** in as much detail as possible.
@@ -47,3 +47,9 @@ NOTE: Be sure to merge the latest from "upstream" before making a pull request!
 - Use `npm run lint` to check for style errors.
 
 Thank you for contributing!
+
+## Project notes
+
+- **New art styles** go in `src/art/engine.ts`: add a renderer `(ctx, w, h, rand, palette) => void`, register it in `RENDERERS` and `KIND_LABEL`. Use only the seeded `rand`, never `Math.random`, so works stay reproducible.
+- **Vendored React Bits components** live in `src/components/reactbits/` and are excluded from lint. Keep edits to them small and note why.
+- Run `npm run lint && npm run build` before opening a pull request.
