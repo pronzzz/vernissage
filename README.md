@@ -6,7 +6,7 @@
 
 A demo website for a network where artists and curators find each other, hang their work in shared rooms and host openings online. Every artwork on the site is generated live in your browser from a seed and a five-colour palette, so the whole show repaints when you change it.
 
-[**Live site → vernissage-art.vercel.app**](https://vernissage-art.vercel.app)
+[**Live site → vernissage-gallery.vercel.app**](https://vernissage-gallery.vercel.app)
 
 ![Vernissage hero: a live flow field behind the headline "Every artist deserves a full room."](docs/screenshots/hero.jpg)
 
